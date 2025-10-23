@@ -2,54 +2,133 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Please edit this file. -->
 
-```{r, include = FALSE}
+```{r, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  message = FALSE, warning = FALSE
 )
+library(assignment4.xinlei.luo) 
 ```
 
 # assignment4.xinlei.luo
 
-<!-- badges: start -->
-<!-- badges: end -->
+An R package that ships example datasets on **healthcare-associated infections (HAIs)** in Germany and an interactive **Shiny app** to explore the burden by infection type or sample.
 
-The goal of assignment4.xinlei.luo is to ...
+## What’s inside
+
+- Packaged CSV datasets under inst/extdata/ (hai_table1, hai_table2)
+
+- Utility functions
+
+  - list_hai_datasets() – list available datasets in the package
+
+  - read_hai_dataset(name) – read a dataset into a tidy data frame
+  *(returns columns: infection_type, sample, cases, deaths, daly)*
+
+  - summarise_hai(df, by, metric) – summarise totals by a grouping
+
+  - run_app() – launch the interactive Shiny explorer
+
+- A vignette: Getting Started: Germany HAI Burden Explorer
+
+## Metric definitions
+
+- **cases** – number of HAI infections
+
+- **deaths** – number of deaths attributable to HAI
+
+- **daly** – disability-adjusted life years (YLL + YLD), a composite burden metric
 
 ## Installation
 
-You can install the development version of assignment4.xinlei.luo from [GitHub](https://github.com/) with:
+You can install the development version of `assignment4.xinlei.luo` from [GitHub](https://github.com) with:
 
-``` r
-# install.packages("pak")
-pak::pak("ETC5523-2025/assignment-4-packages-and-shiny-apps-XINLEI-LUO")
+```{r}
+# install.packages("devtools")
+devtools::install_github("ETC5523-2025/assignment-4-packages-and-shiny-apps-XINLEI-LUO")
+```
+*(If you prefer remotes, use remotes::install_github().)*
+
+## Data included
+List packaged datasets:
+```{r}
+list_hai_datasets()
+```
+Read one:
+```{r}
+df1 <- read_hai_dataset("hai_table1")
+head(df1)
+```
+*Note: If a dataset originally lacks sample, the reader fills it with "German_PPS" for consistency.*
+
+## Quick summaries
+Summarise **DALYs** by infection type:
+```{r}
+smry_by_type <- summarise_hai(df1, by = "infection_type", metric = "daly")
+smry_by_type
+```
+If the dataset contains multiple samples, you can summarise by sample too:
+```{r}
+df2 <- read_hai_dataset("hai_table2")
+smry_by_sample <- summarise_hai(df2, by = "sample", metric = "cases")
+smry_by_sample
 ```
 
-## Example
+## Example plot
+```{r}
+library(ggplot2)
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-library(assignment4.xinlei.luo)
-## basic example code
+ggplot(smry_by_type, aes(group, value, fill = group)) +
+geom_col() +
+scale_fill_brewer(palette = "Set2") +
+labs(x = NULL, y = "DALYs", title = "DALYs by infection type") +
+theme_minimal(base_size = 13) +
+theme(legend.position = "none")
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r cars}
-summary(cars)
+## Shiny app
+Launch the interactive explorer:
+```{r shiny-demo, eval=FALSE}
+run_app()
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+The app lets you:
 
-You can also embed plots, for example:
+1.Choose dataset (hai_table1, hai_table2)
 
-```{r pressure, echo = FALSE}
-plot(pressure)
+2.Pick a metric (cases, deaths, daly)
+
+3.Group by infection_type or sample
+
+4.View a bar chart of totals (sums)
+
+## Documentation website
+
+If you enabled pkgdown + GitHub Actions, the site will be published at:
+
+- Site: <https://ETC5523-2025.github.io/assignment-4-packages-and-shiny-apps-XINLEI-LUO/>
+
+(Replace the URL above if your repository/org name differs.)
+
+## Development
+
+- Generate docs: devtools::document()
+
+- Build README: devtools::build_readme()
+
+- Run checks: devtools::check()
+
+- Build site: pkgdown::build_site()
+
+## License
+MIT @ Xinlei Luo
+
+## Reproducibility
+```{r}
+sessionInfo()
 ```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.

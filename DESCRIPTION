@@ -1,10 +1,24 @@
 Package: assignment4.xinlei.luo
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Hospital-Acquired Infection (HAI) Explorer
+Version: 0.0.1
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    c(person(given = "Xinlei", family = "Luo", role = c("aut","cre"),
+             email = "xluo0036@student.monash.edu"))
+Description: Minimal teaching package for exploring Germany HAI burden with a Shiny app. 
 License: MIT + file LICENSE
+Depends: R (>= 4.3)
+Imports: 
+    shiny,
+    readr,
+    dplyr,
+    ggplot2,
+    readxl,
+    tidyr,
+    utils
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
+LazyData: true
 RoxygenNote: 7.3.3

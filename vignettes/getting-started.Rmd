@@ -1,0 +1,112 @@
+---
+title: "Getting Started: Germany HAI Burden Explorer"
+author: "Xinlei Luo"
+date: "`r format(Sys.Date())`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started: Germany HAI Burden Explorer}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r setup, include=FALSE}
+library(assignment4.xinlei.luo)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4.5
+)
+```
+
+## Overview
+
+This vignette shows how to use the package assignment4.xinlei.luo:
+
+- explore example HAI datasets shipped with the package
+
+- understand the three metrics: cases, deaths, daly
+
+- launch the Shiny app
+
+## Metric definitions
+
+- cases – number of HAI infections
+
+- deaths – number of deaths attributable to HAI
+
+- daly – disability-adjusted life years (YLL + YLD), a composite burden metric
+
+## Installation
+```{r}
+remotes::install_github("ETC5523-2025/assignment-4-packages-and-shiny-apps-XINLEI-LUO")
+library(assignment4.xinlei.luo)
+```
+
+## What data are included?
+
+### List the packaged datasets (stored under inst/extdata/):
+```{r}
+list_hai_datasets()
+```
+
+### Read one dataset:
+```{r}
+df1 <- read_hai_dataset("hai_table1")
+head(df1)
+```
+
+### Expected columns:
+
+- infection_type (e.g., HAP, UTI, BSI, …)
+
+- sample (e.g., German_PPS, German_convenience, ECDC_PPS_EU_EEA)
+
+- cases, deaths, daly (numeric)
+*Note: If a dataset originally lacks sample, the reader fills it with "German_PPS" for consistency.*
+
+## Quick summaries
+### Summarise DALYs by infection type:
+```{r}
+library(dplyr)
+smry_by_type <- summarise_hai(df1, by = "infection_type", metric = "daly")
+smry_by_type
+```
+
+### Summarise cases by sample (works if the dataset has multiple samples):
+```{r}
+df2 <- read_hai_dataset("hai_table2")
+smry_by_sample <- summarise_hai(df2, by = "sample", metric = "cases")
+smry_by_sample
+```
+
+## A simple plot
+```{r}
+library(ggplot2)
+ggplot(smry_by_type, aes(group, value, fill = group)) +
+geom_col() +
+scale_fill_brewer(palette = "Set2") +
+labs(x = NULL, y = "DALYs", title = "DALYs by infection type") +
+theme_minimal(base_size = 13) +
+theme(legend.position = "none")
+```
+
+## Launch the Shiny app
+```{r shiny-demo, eval=FALSE}
+run_app()
+```
+
+The app lets you:
+
+1.Choose dataset (hai_table1, hai_table2)
+
+2.Pick a metric (cases, deaths, daly)
+
+3.Group by infection_type or sample
+
+4.View a bar chart of totals (sums)
+
+## Reproducibility
+```{r}
+sessionInfo()
+```
